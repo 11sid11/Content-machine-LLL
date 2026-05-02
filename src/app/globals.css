@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: #050609;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(41, 168, 255, 0.12), transparent 32rem),
+    radial-gradient(circle at 82% 12%, rgba(201, 164, 92, 0.12), transparent 28rem),
+    linear-gradient(180deg, #050609 0%, #090b10 46%, #050609 100%);
+  color: #f7f7f4;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+select {
+  color: #ffffff;
+  background-color: #09090b;
+}
+
+select option {
+  color: #ffffff;
+  background-color: #18181b;
+}
+
+select option:checked {
+  color: #ffffff;
+  background-color: #0f172a;
+}
+
+select option:hover {
+  color: #ffffff;
+  background-color: #1e293b;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #29a8ff;
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(41, 168, 255, 0.35);
+}
+
+.premium-scrollbar {
+  scrollbar-color: rgba(201, 164, 92, 0.65) rgba(255, 255, 255, 0.06);
+  scrollbar-width: thin;
+}
+
+.premium-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.premium-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.premium-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(201, 164, 92, 0.65);
+  border-radius: 999px;
+}
