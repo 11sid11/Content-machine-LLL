@@ -1,6 +1,6 @@
 "use client";
 
-import { Eraser, Wand2 } from "lucide-react";
+import { Eraser, Shuffle, Wand2 } from "lucide-react";
 import type { Goal, MannequinGender, OutputType, PostCategory, PostFormat, PromptBuildInput, Tone } from "@/types/content";
 import { colorSchemes, defaultColorSchemeForCategory } from "@/lib/colorSchemes";
 
@@ -54,6 +54,7 @@ interface PromptBuilderFormProps {
   onChange: (value: PromptBuildInput) => void;
   onManualSlideCountChange: (value: number) => void;
   onManualColorSchemeChange: () => void;
+  onNewSeed: () => void;
   onGenerate: () => void;
   onClear: () => void;
 }
@@ -69,6 +70,7 @@ export function PromptBuilderForm({
   onChange,
   onManualSlideCountChange,
   onManualColorSchemeChange,
+  onNewSeed,
   onGenerate,
   onClear
 }: PromptBuilderFormProps) {
@@ -250,6 +252,40 @@ export function PromptBuilderForm({
                 </option>
               ))}
             </select>
+          </label>
+        </div>
+
+        <div className="rounded-lg border border-white/10 bg-ink/45 p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <label className="min-w-0 flex-1">
+              <span className={labelClass}>Variation Seed</span>
+              <input
+                className={fieldClass}
+                value={value.creativeSeed}
+                onChange={(event) => update("creativeSeed", event.target.value)}
+                placeholder="Auto-generated on each prompt"
+                disabled={value.randomizeSeed}
+              />
+            </label>
+            <button
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-blue/30 bg-blue/10 px-4 py-2.5 text-sm font-semibold text-blue transition hover:border-blue hover:bg-blue/20"
+              type="button"
+              onClick={onNewSeed}
+            >
+              <Shuffle className="h-4 w-4" />
+              New Seed
+            </button>
+          </div>
+          <label className="mt-3 flex items-start gap-3 text-sm text-white/60">
+            <input
+              className="mt-1 h-4 w-4 rounded border-zinc-700 bg-zinc-950 accent-cyan-400"
+              type="checkbox"
+              checked={value.randomizeSeed}
+              onChange={(event) => update("randomizeSeed", event.target.checked)}
+            />
+            <span>
+              Auto-generate a fresh seed every time. Turn this off to reuse a seed and reproduce the same prompt variation.
+            </span>
           </label>
         </div>
       </div>

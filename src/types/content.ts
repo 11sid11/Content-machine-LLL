@@ -47,6 +47,8 @@ export interface PromptBuildInput {
   outputType: OutputType;
   colorScheme: ColorSchemeId;
   mannequinGender: MannequinGender;
+  creativeSeed: string;
+  randomizeSeed: boolean;
 }
 
 export interface PromptBuildResult extends PromptBuildInput {

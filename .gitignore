@@ -1,0 +1,7 @@
+node_modules/
+.next/
+out/
+content-machine/
+tsconfig.tsbuildinfo
+dev-server.log
+dev-server.err

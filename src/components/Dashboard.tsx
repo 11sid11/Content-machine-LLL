@@ -19,7 +19,9 @@ const initialPromptState: PromptBuildInput = {
   goal: "Save",
   outputType: "Full post package",
   colorScheme: "neon-blue-form",
-  mannequinGender: "Male"
+  mannequinGender: "Male",
+  creativeSeed: "",
+  randomizeSeed: true
 };
 
 const defaultSettings: Settings = {
@@ -32,6 +34,18 @@ function normalizeSettings(input: Partial<Settings> | null): Settings {
   return {
     chatGptChatUrl: input?.chatGptChatUrl || defaultSettings.chatGptChatUrl
   };
+}
+
+function createCreativeSeed() {
+  const prefix = Date.now().toString(36);
+
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+    const values = new Uint32Array(2);
+    crypto.getRandomValues(values);
+    return `${prefix}-${values[0].toString(36)}-${values[1].toString(36)}`;
+  }
+
+  return `${prefix}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export function Dashboard() {
@@ -74,7 +88,10 @@ export function Dashboard() {
   async function handleGeneratePrompt() {
     setIsGenerating(true);
     try {
-      const result = buildPrompt(form);
+      const creativeSeed = form.randomizeSeed || !form.creativeSeed.trim()
+        ? createCreativeSeed()
+        : form.creativeSeed.trim();
+      const result = buildPrompt({ ...form, creativeSeed });
 
       setForm({
         category: result.category,
@@ -85,10 +102,12 @@ export function Dashboard() {
         goal: result.goal,
         outputType: result.outputType,
         colorScheme: result.colorScheme,
-        mannequinGender: result.mannequinGender
+        mannequinGender: result.mannequinGender,
+        creativeSeed: result.creativeSeed,
+        randomizeSeed: result.randomizeSeed
       });
       setPrompt(result.prompt);
-      toast("Prompt generated.", "success");
+      toast(`Prompt generated with seed ${result.creativeSeed}.`, "success");
     } catch (error) {
       toast((error as Error).message, "error");
     } finally {
@@ -145,6 +164,11 @@ export function Dashboard() {
             onChange={setForm}
             onManualSlideCountChange={setManualSlideCount}
             onManualColorSchemeChange={() => setHasManualColorScheme(true)}
+            onNewSeed={() => {
+              const seed = createCreativeSeed();
+              setForm((current) => ({ ...current, creativeSeed: seed }));
+              toast(`New seed: ${seed}`, "info");
+            }}
             onGenerate={handleGeneratePrompt}
             onClear={() => {
               setForm(initialPromptState);

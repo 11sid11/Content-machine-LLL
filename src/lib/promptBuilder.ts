@@ -134,6 +134,112 @@ function normalizeSlideCount(format: PostFormat, slideCount: number, category: P
   return Math.min(10, Math.max(2, Math.round(slideCount)));
 }
 
+function hashSeed(seed: string) {
+  let hash = 2166136261;
+
+  for (let index = 0; index < seed.length; index += 1) {
+    hash ^= seed.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function pickSeeded<T>(items: T[], hash: number, offset: number) {
+  return items[(hash + offset) % items.length];
+}
+
+function seedVariationProfile(seed: string, category: PostCategory) {
+  const categoryHooks: Record<PostCategory, string[]> = {
+    "Form / Exercise Technique": [
+      "wrong-vs-right contrast",
+      "one cue that changes the whole lift",
+      "common mistake people do not notice",
+      "setup-first correction",
+      "target-muscle activation angle",
+      "coach's checklist angle"
+    ],
+    "Nutrition / Supplements": [
+      "myth-vs-fact angle",
+      "simple rule that removes confusion",
+      "mistake-to-fix angle",
+      "evidence-level breakdown",
+      "daily habit framing",
+      "practical checklist angle"
+    ],
+    "Gym Motivation": [
+      "hard truth angle",
+      "future-self contrast",
+      "discipline standard angle",
+      "quiet consistency angle",
+      "excuse-breaking angle",
+      "identity shift angle"
+    ]
+  };
+
+  const openingStyles = [
+    "direct warning hook",
+    "counterintuitive hook",
+    "visual comparison hook",
+    "question hook",
+    "challenge hook",
+    "micro-story hook"
+  ];
+
+  const slideRhythms = [
+    "contrast-heavy slides with sharp before/after logic",
+    "step-by-step teaching flow with one idea per slide",
+    "problem/fix rhythm with clear practical takeaways",
+    "checklist-led structure with tight scannable cues",
+    "myth/truth rhythm with a strong final rule",
+    "coach-note rhythm with concise expert reminders"
+  ];
+
+  const visualTwists = [
+    "use one recurring anchor element that changes meaning across slides",
+    "use a consistent left-to-right comparison system",
+    "use numbered micro-panels for fast mobile scanning",
+    "use one bold central visual with smaller supporting cue panels",
+    "use a clean diagnostic UI style with labels and status badges",
+    "use a stronger final CTA strip than the earlier slides"
+  ];
+
+  const ctaStyles = [
+    "save this before your next session",
+    "send this to someone who needs the cue",
+    "follow for more practical breakdowns",
+    "comment the next topic to break down",
+    "use this as a checklist",
+    "share this with your training partner"
+  ];
+
+  const hash = hashSeed(`${category}:${seed}`);
+
+  return {
+    hookAngle: pickSeeded(categoryHooks[category], hash, 3),
+    openingStyle: pickSeeded(openingStyles, hash, 11),
+    slideRhythm: pickSeeded(slideRhythms, hash, 19),
+    visualTwist: pickSeeded(visualTwists, hash, 29),
+    ctaStyle: pickSeeded(ctaStyles, hash, 41)
+  };
+}
+
+function formatSeedVariation(seed: string, category: PostCategory) {
+  const profile = seedVariationProfile(seed, category);
+
+  return `CREATIVE SEED VARIATION LOCK:
+- Creative seed: ${seed}
+- Treat this seed as the randomization key for this exact prompt.
+- Same seed should produce the same strategic choices; a different seed should produce a meaningfully different version.
+- Hook angle: ${profile.hookAngle}
+- Opening style: ${profile.openingStyle}
+- Slide rhythm: ${profile.slideRhythm}
+- Visual twist: ${profile.visualTwist}
+- CTA style: ${profile.ctaStyle}
+- Let the seed influence hook wording, content angle, examples, slide emphasis, caption hook, CTA wording, and optional design prompt.
+- Do not ignore the seed or return the most generic/default version.`;
+}
+
 function mannequinAppearance(gender: MannequinGender) {
   if (gender === "Female") {
     return `Female athletic subject lock:
@@ -310,6 +416,7 @@ INPUTS:
 - Output type: ${input.outputType}
 - Color scheme: ${selectedScheme.name}
 - Mannequin gender: ${input.mannequinGender}
+- Creative seed: ${input.creativeSeed}
 
 GLOBAL BRAND RULES:
 - Brand positioning: LeanLogicLab is smart fitness made simple. It turns confusing gym, nutrition, and mindset topics into premium, practical, save-worthy Instagram posts.
@@ -324,6 +431,8 @@ GLOBAL BRAND RULES:
 - Never make repetitive slides. Every slide needs a unique purpose.
 
 ${topicMode(input.topic, input.category)}
+
+${formatSeedVariation(input.creativeSeed, input.category)}
 
 COLOR SCHEME LOCK:
 ${formatColorSchemeForPrompt(input.colorScheme)}
@@ -358,6 +467,7 @@ TONE:
 GOAL:
 COLOR SCHEME:
 MANNEQUIN GENDER:
+CREATIVE SEED:
 
 POST STRATEGY:
 Write a 2-3 sentence strategy for why this post will work for ${input.goal.toLowerCase()}.
@@ -403,6 +513,8 @@ export function buildPrompt(input: PromptBuildInput): PromptBuildResult {
   const outputType = input.outputType || "Full post package";
   const colorScheme = input.colorScheme || defaultColorSchemeForCategory(category);
   const mannequinGender = input.mannequinGender || "Male";
+  const creativeSeed = input.creativeSeed?.trim() || "default-seed";
+  const randomizeSeed = input.randomizeSeed ?? true;
 
   const normalized: PromptBuildResult = {
     category,
@@ -414,6 +526,8 @@ export function buildPrompt(input: PromptBuildInput): PromptBuildResult {
     outputType: outputType as OutputType,
     colorScheme,
     mannequinGender,
+    creativeSeed,
+    randomizeSeed,
     prompt: ""
   };
 

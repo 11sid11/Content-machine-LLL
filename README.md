@@ -16,6 +16,7 @@ For free hosting, use a **public GitHub repository**. Private-repo Pages availab
 - Supports `Form / Exercise Technique`, `Nutrition / Supplements`, and `Gym Motivation`.
 - Generates category-specific prompt logic, visual direction, slide structure, caption instructions, and hashtag instructions.
 - Lets you choose format, slide count, tone, goal, output type, color scheme, and mannequin gender.
+- Adds seed-based variation so each generated prompt can use a different hook angle, slide rhythm, visual twist, and CTA style.
 - Copies the generated prompt to your clipboard.
 - Opens your saved ChatGPT chat URL in a new tab.
 - Saves the ChatGPT URL in your browser using `localStorage`.
@@ -90,6 +91,15 @@ The prompt builder includes 10 preset color schemes:
 - Amber Graphite
 
 The prompt locks the selected palette across the full carousel so generated slides stay visually consistent.
+
+## Seed-Based Variation
+
+The app includes a `Variation Seed` system.
+
+- By default, a fresh seed is generated on every prompt.
+- Different seeds create different prompt directions.
+- The seed changes hook angle, opening style, slide rhythm, visual twist, and CTA style.
+- Turn off auto-randomization if you want to reuse the same seed and reproduce a similar prompt.
 
 ## Mannequin Gender
 
@@ -210,7 +220,7 @@ That means:
 
 1. Select the post category.
 2. Enter a topic, or leave it blank to let the prompt ask ChatGPT to choose a viral LeanLogicLab topic.
-3. Select format, slide count, tone, goal, output type, mannequin gender, and color scheme.
+3. Select format, slide count, tone, goal, output type, mannequin gender, color scheme, and seed behavior.
 4. Click `Generate Prompt`.
 5. Click `Copy Prompt` or `Open ChatGPT Chat`.
 6. Paste/send the prompt in ChatGPT manually.
